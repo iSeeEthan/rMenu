@@ -26,7 +26,7 @@ rMenu is a versatile and user-friendly menu designed for RedM, offering players 
 
 ### Commands
 - `/rmenu` - Opens the main menu.  
-
+- `/dv` - Deletes your current horse, carriage or boat.  
 ---
 
 ## Dependencies
