@@ -87,7 +87,6 @@ Config.Landmarks = {
 
 Config.StoryPeds = {
     {title = "Arthur Morgan", hash = "Player_Zero"},
-    {title = "Doggy", hash = "A_C_DogAustralianSheperd_01"},
     {title = "John Marston", hash = "CS_JOHNMARSTON"},
     {title = "Dutch van der Linde", hash = "CS_DUTCH"},
     {title = "Micah Bell", hash = "CS_MICAHBELL"},
@@ -110,7 +109,104 @@ Config.StoryPeds = {
     {title = "Josiah Trelawny", hash = "CS_JOSIAHTRELAWNY"},
     {title = "Reverend Swanson", hash = "CS_REVSWANSON"},
     {title = "Levi Simon", hash = "CS_LEVISIMON"},
-    {title = "Mr. Pearson", hash = "CS_MRPEARSON"}
+    {title = "Mr. Pearson", hash = "CS_MRPEARSON"},
+    {title = "Mary Linton", hash = "CS_MARYLINTON"},
+    {title = "Colm O'Driscoll", hash = "CS_COLMODRISCOLL"},
+    {title = "Leviticus Cornwall", hash = "CS_LEVITICUSCORNWALL"},
+    {title = "Angelo Bronte", hash = "CS_ANGELOBRONTE"},
+    {title = "Thomas Downes", hash = "CS_THOMASDOWNES"}
+}
+
+Config.Animals = {
+    {title = "Dog", hash = "A_C_DogAustralianSheperd_01"},
+    {title = "Wolf", hash = "A_C_Wolf"},
+    {title = "Bear", hash = "A_C_Bear_01"},
+    {title = "Cougar", hash = "A_C_Cougar_01"},
+    {title = "Deer", hash = "A_C_Deer_01"},
+    {title = "Fox", hash = "A_C_Fox_01"},
+    {title = "Boar", hash = "A_C_Boar_01"},
+    {title = "Elk", hash = "A_C_Elk_01"},
+    {title = "Coyote", hash = "A_C_Coyote_01"},
+    {title = "Alligator", hash = "A_C_Alligator_01"},
+    {title = "Horse (Wild)", hash = "A_C_Horse_AmericanStandardbred_Black"},
+    {title = "Bison", hash = "A_C_Buffalo_01"},
+    {title = "Eagle", hash = "A_C_Eagle_01"},
+    {title = "Hawk", hash = "A_C_Hawk_01"},
+    {title = "Owl", hash = "A_C_Owl_01"},
+    {title = "Rabbit", hash = "A_C_Rabbit_01"},
+    {title = "Raccoon", hash = "A_C_Raccoon_01"},
+    {title = "Snake", hash = "A_C_Snake_01"},
+    {title = "Turkey", hash = "A_C_Turkey_01"},
+    {title = "Vulture", hash = "A_C_Vulture_01"}
+}
+
+Config.Civilians = {
+    {title = "Male Townsfolk 1", hash = "A_M_M_AsbTownfolk_01"},
+    {title = "Female Townsfolk 1", hash = "A_F_M_AsbTownfolk_01"},
+    {title = "Male Farmer", hash = "A_M_M_Farmer_01"},
+    {title = "Female Farmer", hash = "A_F_M_Farmer_01"},
+    {title = "Male Rancher", hash = "A_M_M_Rancher_01"},
+    {title = "Female Rancher", hash = "A_F_M_Rancher_01"},
+    {title = "Male Miner", hash = "A_M_M_Miner_01"},
+    {title = "Male Hunter", hash = "A_M_M_Hunter_01"},
+    {title = "Female Hunter", hash = "A_F_M_Hunter_01"},
+    {title = "Male Shopkeeper", hash = "U_M_M_Storekeeper_01"},
+    {title = "Female Shopkeeper", hash = "U_F_M_Storekeeper_01"},
+    {title = "Male Bartender", hash = "U_M_M_Bartender_01"},
+    {title = "Male Doctor", hash = "U_M_M_Doctor_01"},
+    {title = "Male Blacksmith", hash = "U_M_M_Blacksmith_01"},
+    {title = "Male Train Conductor", hash = "U_M_M_TrainConductor_01"},
+    {title = "Male Fisherman", hash = "A_M_M_Fisherman_01"},
+    {title = "Male Trapper", hash = "A_M_M_Trapper_01"},
+    {title = "Male Old Man", hash = "A_M_O_OldMan_01"},
+    {title = "Female Old Woman", hash = "A_F_O_OldWoman_01"},
+    {title = "Male Drunk", hash = "A_M_M_Drunk_01"}
+}
+
+Config.GangMembers = {
+    {title = "O'Driscoll Gang 1", hash = "G_M_M_UniODriscolls_01"},
+    {title = "O'Driscoll Gang 2", hash = "G_M_M_UniODriscolls_02"},
+    {title = "Lemoyne Raider 1", hash = "G_M_M_UniLemoyneRaiders_01"},
+    {title = "Lemoyne Raider 2", hash = "G_M_M_UniLemoyneRaiders_02"},
+    {title = "Murfree Brood 1", hash = "G_M_M_UniMurfree_01"},
+    {title = "Murfree Brood 2", hash = "G_M_M_UniMurfree_02"},
+    {title = "Del Lobo Gang 1", hash = "G_M_M_UniDelLobo_01"},
+    {title = "Del Lobo Gang 2", hash = "G_M_M_UniDelLobo_02"},
+    {title = "Laramie Gang 1", hash = "G_M_M_UniLaramie_01"},
+    {title = "Laramie Gang 2", hash = "G_M_M_UniLaramie_02"},
+    {title = "Night Folk 1", hash = "G_M_M_UniNightFolk_01"},
+    {title = "Night Folk 2", hash = "G_M_M_UniNightFolk_02"},
+    {title = "Skinner Brother 1", hash = "G_M_M_UniSkinners_01"},
+    {title = "Skinner Brother 2", hash = "G_M_M_UniSkinners_02"},
+    {title = "Bandito 1", hash = "G_M_M_UniBandito_01"},
+    {title = "Bandito 2", hash = "G_M_M_UniBandito_02"},
+    {title = "Grays Gang 1", hash = "G_M_M_UniGrays_01"},
+    {title = "Grays Gang 2", hash = "G_M_M_UniGrays_02"},
+    {title = "Braithwaite Gang 1", hash = "G_M_M_UniBraithwaites_01"},
+    {title = "Braithwaite Gang 2", hash = "G_M_M_UniBraithwaites_02"}
+}
+
+Config.Lawmen = {a
+    {title = "Sheriff Freeman", hash = "CS_SheriffFreeman"},
+    {title = "Sheriff Owens", hash = "CS_SheriffOwens"},
+    {title = "Deputy 1", hash = "U_M_M_Deputy_01"},
+    {title = "Deputy 2", hash = "U_M_M_Deputy_02"},
+    {title = "Lawman 1", hash = "U_M_M_Lawman_01"},
+    {title = "Lawman 2", hash = "U_M_M_Lawman_02"},
+    {title = "Marshal 1", hash = "U_M_M_Marshal_01"},
+    {title = "Marshal 2", hash = "U_M_M_Marshal_02"},
+    {title = "Prison Guard 1", hash = "U_M_M_PrisonGuard_01"},
+    {title = "Prison Guard 2", hash = "U_M_M_PrisonGuard_02"},
+    {title = "Bounty Hunter 1", hash = "U_M_M_BountyHunter_01"},
+    {title = "Bounty Hunter 2", hash = "U_M_M_BountyHunter_02"},
+    {title = "Pinkerton 1", hash = "U_M_M_Pinkerton_01"},
+    {title = "Pinkerton 2", hash = "U_M_M_Pinkerton_02"},
+    {title = "Army Soldier 1", hash = "U_M_M_ArmySoldier_01"},
+    {title = "Army Soldier 2", hash = "U_M_M_ArmySoldier_02"},
+    {title = "Town Guard 1", hash = "U_M_M_TownGuard_01"},
+    {title = "Town Guard 2", hash = "U_M_M_TownGuard_02"},
+    {title = "Ranger 1", hash = "U_M_M_Ranger_01"},
+    {title = "Ranger 2", hash = "U_M_M_Ranger_02"}
 }
 
 Config.Carriages = {
