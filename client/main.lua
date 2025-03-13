@@ -189,7 +189,7 @@ local function initializeMenu()
         end)
     end
 
-    for i = 0, 9 do
+    for i = 0, 19 do
         addMenuItem('outfitsMenu', "Outfit " .. i, "Apply outfit preset " .. i, nil, nil, function()
             SetPedOutfitPreset(PlayerPedId(), i, false)
             currentOutfit = i
