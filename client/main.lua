@@ -28,6 +28,12 @@ local function saveWeapons()
     end
 end
 
+local function clearInventory()
+    local ped = PlayerPedId()
+    RemoveAllPedWeapons(ped, true)
+    savedWeapons = {}
+end
+
 local function restoreWeapons()
     local ped = PlayerPedId()
     for weaponHash, data in pairs(savedWeapons) do
