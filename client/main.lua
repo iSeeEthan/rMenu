@@ -1,13 +1,11 @@
 ClearWeatherTypePersist()
 local playerVehicles = {}
-
--- variables
 local savedWeapons = {}
 local respawnCoords = nil
 local currentPedModel = nil
 local currentOutfit = 0
+local menus = {}
 
--- functions
 local function saveWeapons()
     savedWeapons = {}
     local ped = PlayerPedId()
@@ -29,8 +27,7 @@ local function saveWeapons()
 end
 
 local function clearInventory()
-    local ped = PlayerPedId()
-    RemoveAllPedWeapons(ped, true)
+    RemoveAllPedWeapons(PlayerPedId(), true)
     savedWeapons = {}
 end
 
@@ -73,33 +70,24 @@ local function spawnVehicle(modelHash, entityType, applyRandomVariation)
         timeout = timeout - 100
     end
     
-    if not HasModelLoaded(hash) then
-        return nil
-    end
+    if not HasModelLoaded(hash) then return end
     
     local spawnX, spawnY, spawnZ = x + 2.0, y + 2.0, z + 10.0
     local foundGround, groundZ = GetGroundZFor_3dCoord(spawnX, spawnY, spawnZ, false)
-    if foundGround then
-        spawnZ = groundZ + 1.0
-    else
-        spawnZ = z
-    end
+    spawnZ = foundGround and (groundZ + 1.0) or z
     
     if playerVehicles[playerId] and DoesEntityExist(playerVehicles[playerId]) then
         DeleteEntity(playerVehicles[playerId])
         playerVehicles[playerId] = nil
     end
     
-    local entity
-    if entityType == "ped" then
-        entity = CreatePed(hash, spawnX, spawnY, spawnZ, heading, true, false, false)
-    else
-        entity = CreateVehicle(hash, spawnX, spawnY, spawnZ, heading, true, false)
-    end
+    local entity = entityType == "ped" and 
+        CreatePed(hash, spawnX, spawnY, spawnZ, heading, true, false, false) or 
+        CreateVehicle(hash, spawnX, spawnY, spawnZ, heading, true, false)
     
     if not DoesEntityExist(entity) then
         SetModelAsNoLongerNeeded(hash)
-        return nil
+        return
     end
     
     SetEntityAsMissionEntity(entity, true, true)
@@ -109,425 +97,190 @@ local function spawnVehicle(modelHash, entityType, applyRandomVariation)
     SetEntityCollision(entity, true, true)
     
     if entityType == "ped" then
-        TaskWarpPedIntoVehicle(ped, entity, -1) -- Mount horse
+        TaskWarpPedIntoVehicle(ped, entity, -1)
     else
-        SetPedIntoVehicle(ped, entity, -1) -- Enter vehicle (driver seat)
+        SetPedIntoVehicle(ped, entity, -1)
     end
     
     SetModelAsNoLongerNeeded(hash)
     playerVehicles[playerId] = entity
-    
-    return entity
 end
 
--- menu creation after player spawn
-AddEventHandler('playerSpawned', function()
-    while not jo do
-        Wait(100)
-    end
+local function createMenu(id, title, subtitle, numberOnScreen, onBack)
+    menus[id] = jo.menu.create(id, {title = title, subtitle = subtitle, numberOnScreen = numberOnScreen, onBack = onBack})
+end
 
-    local mainMenu = jo.menu.create('rCoreMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 6,
-        onBack = function() jo.menu.show(false) end
-    })
+local function addMenuItem(menuId, title, description, price, child, onClick)
+    menus[menuId]:addItem({title = title, description = description, price = price, child = child, onClick = onClick})
+end
 
-    local weaponsMenu = jo.menu.create('weaponsMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
+local function initializeMenu()
+    while not jo do Wait(100) end
+    if IsPlayerDead(PlayerId()) or not NetworkIsPlayerActive(PlayerId()) then return end
 
-    local meleesMenu = jo.menu.create('meleesMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
+    createMenu('rCoreMenu', "rMenu", "rMenu", 6, function() jo.menu.show(false) end)
+    createMenu('weaponsMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('meleesMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('miscMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('spawnsMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('townsMenu', "rMenu", "Towns", 8, function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end)
+    createMenu('campsMenu', "rMenu", "Camps", 8, function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end)
+    createMenu('landmarksMenu', "rMenu", "Landmarks", 8, function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end)
+    createMenu('outfitsMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('pedsMenu', "rMenu", "rMenu", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('vehiclesMenu', "rMenu", "Vehicles", 8, function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end)
+    createMenu('carriagesMenu', "rMenu", "Carriages", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
+    createMenu('horsesMenu', "rMenu", "Horses", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
+    createMenu('boatsMenu', "rMenu", "Boats", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
 
-    local miscMenu = jo.menu.create('miscMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
-
-    local spawnsMenu = jo.menu.create('spawnsMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
-
-    local townsMenu = jo.menu.create('townsMenu', {
-        title = "rMenu",
-        subtitle = "Towns",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end
-    })
-
-    local campsMenu = jo.menu.create('campsMenu', {
-        title = "rMenu",
-        subtitle = "Camps",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end
-    })
-
-    local landmarksMenu = jo.menu.create('landmarksMenu', {
-        title = "rMenu",
-        subtitle = "Landmarks",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end
-    })
-
-    local outfitsMenu = jo.menu.create('outfitsMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
-
-    local pedsMenu = jo.menu.create('pedsMenu', {
-        title = "rMenu",
-        subtitle = "rMenu",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
-
-    local vehiclesMenu = jo.menu.create('vehiclesMenu', {
-        title = "rMenu",
-        subtitle = "Vehicles",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('rCoreMenu', true, true) jo.menu.show(true) end
-    })
-
-    local carriagesMenu = jo.menu.create('carriagesMenu', {
-        title = "rMenu",
-        subtitle = "Carriages",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end
-    })
-
-    local horsesMenu = jo.menu.create('horsesMenu', {
-        title = "rMenu",
-        subtitle = "Horses",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end
-    })
-
-    local boatsMenu = jo.menu.create('boatsMenu', {
-        title = "rMenu",
-        subtitle = "Boats",
-        numberOnScreen = 8,
-        onBack = function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end
-    })
-
-    -- populate menus
     for _, weapon in ipairs(Config.Firearms) do
-        weaponsMenu:addItem({
-            title = weapon.title,
-            description = "Equip this firearm",
-            price = {money = 10.0},
-            onClick = function()
-                local ped = PlayerPedId()
-                GiveWeaponToPed(ped, GetHashKey(weapon.hash), 0, true, false)
-                if weapon.ammoHash then
-                    SetPedAmmoByType(ped, GetHashKey(weapon.ammoHash), weapon.ammoCount)
-                end
-                saveWeapons()
-            end
-        })
+        addMenuItem('weaponsMenu', weapon.title, "Equip this firearm", {money = 10.0}, nil, function()
+            local ped = PlayerPedId()
+            GiveWeaponToPed(ped, GetHashKey(weapon.hash), 0, true, false)
+            if weapon.ammoHash then SetPedAmmoByType(ped, GetHashKey(weapon.ammoHash), weapon.ammoCount) end
+            saveWeapons()
+        end)
     end
 
     for _, melee in ipairs(Config.Melees) do
-        meleesMenu:addItem({
-            title = melee.title,
-            description = "Equip this melee weapon",
-            price = {money = 5.0},
-            onClick = function()
-                local ped = PlayerPedId()
-                GiveWeaponToPed(ped, GetHashKey(melee.hash), 0, true, false)
-                if melee.ammoHash then
-                    SetPedAmmoByType(ped, GetHashKey(melee.ammoHash), melee.ammoCount)
-                end
-                saveWeapons()
-            end
-        })
+        addMenuItem('meleesMenu', melee.title, "Equip this melee weapon", {money = 5.0}, nil, function()
+            local ped = PlayerPedId()
+            GiveWeaponToPed(ped, GetHashKey(melee.hash), 0, true, false)
+            if melee.ammoHash then SetPedAmmoByType(ped, GetHashKey(melee.ammoHash), melee.ammoCount) end
+            saveWeapons()
+        end)
     end
 
     for _, item in ipairs(Config.MiscItems) do
-        miscMenu:addItem({
-            title = item.title,
-            description = "Equip this item",
-            price = {money = 3.0},
-            onClick = function()
-                local ped = PlayerPedId()
-                GiveWeaponToPed(ped, GetHashKey(item.hash), 0, true, false)
-                if item.ammoHash then
-                    SetPedAmmoByType(ped, GetHashKey(item.ammoHash), item.ammoCount)
-                end
-                saveWeapons()
-            end
-        })
+        addMenuItem('miscMenu', item.title, "Equip this item", {money = 3.0}, nil, function()
+            local ped = PlayerPedId()
+            GiveWeaponToPed(ped, GetHashKey(item.hash), 0, true, false)
+            if item.ammoHash then SetPedAmmoByType(ped, GetHashKey(item.ammoHash), item.ammoCount) end
+            saveWeapons()
+        end)
     end
 
     for _, town in ipairs(Config.Towns) do
-        townsMenu:addItem({
-            title = town.title,
-            description = "Teleport to " .. town.title,
-            onClick = function()
-                local ped = PlayerPedId()
-                SetEntityCoords(ped, town.coords.x, town.coords.y, town.coords.z, false, false, false, true)
-                respawnCoords = town.coords
-            end
-        })
+        addMenuItem('townsMenu', town.title, "Teleport to " .. town.title, nil, nil, function()
+            local ped = PlayerPedId()
+            SetEntityCoords(ped, town.coords.x, town.coords.y, town.coords.z, false, false, false, true)
+            respawnCoords = town.coords
+        end)
     end
 
     for _, camp in ipairs(Config.Camps) do
-        campsMenu:addItem({
-            title = camp.title,
-            description = "Teleport to " .. camp.title,
-            onClick = function()
-                local ped = PlayerPedId()
-                SetEntityCoords(ped, camp.coords.x, camp.coords.y, camp.coords.z, false, false, false, true)
-                respawnCoords = camp.coords
-            end
-        })
+        addMenuItem('campsMenu', camp.title, "Teleport to " .. camp.title, nil, nil, function()
+            local ped = PlayerPedId()
+            SetEntityCoords(ped, camp.coords.x, camp.coords.y, camp.coords.z, false, false, false, true)
+            respawnCoords = camp.coords
+        end)
     end
 
     for _, landmark in ipairs(Config.Landmarks) do
-        landmarksMenu:addItem({
-            title = landmark.title,
-            description = "Teleport to " .. landmark.title,
-            onClick = function()
-                local ped = PlayerPedId()
-                SetEntityCoords(ped, landmark.coords.x, landmark.coords.y, landmark.coords.z, false, false, false, true)
-                respawnCoords = landmark.coords
-            end
-        })
+        addMenuItem('landmarksMenu', landmark.title, "Teleport to " .. landmark.title, nil, nil, function()
+            local ped = PlayerPedId()
+            SetEntityCoords(ped, landmark.coords.x, landmark.coords.y, landmark.coords.z, false, false, false, true)
+            respawnCoords = landmark.coords
+        end)
     end
 
     for i = 0, 9 do
-        outfitsMenu:addItem({
-            title = "Outfit " .. i,
-            description = "Apply outfit preset " .. i,
-            onClick = function()
-                local ped = PlayerPedId()
-                SetPedOutfitPreset(ped, i, false)
-                currentOutfit = i
-            end
-        })
+        addMenuItem('outfitsMenu', "Outfit " .. i, "Apply outfit preset " .. i, nil, nil, function()
+            SetPedOutfitPreset(PlayerPedId(), i, false)
+            currentOutfit = i
+        end)
     end
 
     for _, pedData in ipairs(Config.StoryPeds) do
-        pedsMenu:addItem({
-            title = pedData.title,
-            description = "Change to " .. pedData.title,
-            onClick = function()
-                local playerId = PlayerId()
-                local modelHash = GetHashKey(pedData.hash)
-                RequestModel(modelHash)
-                while not HasModelLoaded(modelHash) do
-                    Wait(100)
-                end
-                SetPlayerModel(playerId, modelHash)
-                SetPedOutfitPreset(PlayerPedId(), currentOutfit, false)
-                UpdatePedVariation(PlayerPedId())
-                SetModelAsNoLongerNeeded(modelHash)
-                currentPedModel = pedData.hash
-            end
-        })
+        addMenuItem('pedsMenu', pedData.title, "Change to " .. pedData.title, nil, nil, function()
+            local playerId = PlayerId()
+            local modelHash = GetHashKey(pedData.hash)
+            RequestModel(modelHash)
+            while not HasModelLoaded(modelHash) do Wait(100) end
+            SetPlayerModel(playerId, modelHash)
+            SetPedOutfitPreset(PlayerPedId(), currentOutfit, false)
+            UpdatePedVariation(PlayerPedId())
+            SetModelAsNoLongerNeeded(modelHash)
+            currentPedModel = pedData.hash
+        end)
     end
-        
-for _, horse in ipairs(Config.Horses) do
-    horsesMenu:addItem({
-        title = horse.title,
-        description = "Spawn a " .. horse.title,
-        onClick = function()
+
+    for _, horse in ipairs(Config.Horses) do
+        addMenuItem('horsesMenu', horse.title, "Spawn a " .. horse.title, nil, nil, function()
             spawnVehicle(horse.hash, "ped", true)
-        end
-    })
-end
-        
-for _, carriage in ipairs(Config.Carriages) do
-    carriagesMenu:addItem({
-        title = carriage.title,
-        description = "Spawn a " .. carriage.title,
-        onClick = function()
+        end)
+    end
+
+    for _, carriage in ipairs(Config.Carriages) do
+        addMenuItem('carriagesMenu', carriage.title, "Spawn a " .. carriage.title, nil, nil, function()
             spawnVehicle(carriage.hash, "vehicle", true)
-        end
-    })
-end
-for _, boat in ipairs(Config.Boats) do
-    boatsMenu:addItem({
-        title = boat.title,
-        description = "Spawn a " .. boat.title,
-        onClick = function()
+        end)
+    end
+
+    for _, boat in ipairs(Config.Boats) do
+        addMenuItem('boatsMenu', boat.title, "Spawn a " .. boat.title, nil, nil, function()
             spawnVehicle(boat.hash, "vehicle", false)
-        end
-    })
+        end)
+    end
+
+    addMenuItem('rCoreMenu', "Weapons", "Browse firearms", nil, "weaponsMenu", function() jo.menu.setCurrentMenu('weaponsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Melees", "Browse melee weapons", nil, "meleesMenu", function() jo.menu.setCurrentMenu('meleesMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Misc", "Browse utility items", nil, "miscMenu", function() jo.menu.setCurrentMenu('miscMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Spawns", "Teleport locations", nil, "spawnsMenu", function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('spawnsMenu', "Towns", "Major settlements", nil, "townsMenu", function() jo.menu.setCurrentMenu('townsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('spawnsMenu', "Camps", "Gang hideouts", nil, "campsMenu", function() jo.menu.setCurrentMenu('campsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('spawnsMenu', "Landmarks", "Points of interest", nil, "landmarksMenu", function() jo.menu.setCurrentMenu('landmarksMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Outfits", "Change your outfit", nil, "outfitsMenu", function() jo.menu.setCurrentMenu('outfitsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Peds", "Change character model", nil, "pedsMenu", function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Vehicles", "Spawn carriages, horses, or boats", nil, "vehiclesMenu", function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('vehiclesMenu', "Carriages", "Spawn a carriage", nil, "carriagesMenu", function() jo.menu.setCurrentMenu('carriagesMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('vehiclesMenu', "Horses", "Spawn a horse", nil, "horsesMenu", function() jo.menu.setCurrentMenu('horsesMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('vehiclesMenu', "Boats", "Spawn a boat", nil, "boatsMenu", function() jo.menu.setCurrentMenu('boatsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('rCoreMenu', "Heal", "Restore health", nil, nil, function() SetAttributeCoreValue(PlayerPedId(), 0, 100) end)
+    addMenuItem('rCoreMenu', "Clear Inventory", "Remove all weapons", nil, nil, clearInventory)
+
+    for _, menu in pairs(menus) do
+        menu:send()
+    end
 end
 
-    mainMenu:addItem({
-        title = "Weapons",
-        description = "Browse firearms",
-        child = "weaponsMenu",
-        onClick = function() jo.menu.setCurrentMenu('weaponsMenu', true, true) jo.menu.show(true) end
-    })
+AddEventHandler('playerSpawned', initializeMenu)
 
-    mainMenu:addItem({
-        title = "Melees",
-        description = "Browse melee weapons",
-        child = "meleesMenu",
-        onClick = function() jo.menu.setCurrentMenu('meleesMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Misc",
-        description = "Browse utility items",
-        child = "miscMenu",
-        onClick = function() jo.menu.setCurrentMenu('miscMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Spawns",
-        description = "Teleport locations",
-        child = "spawnsMenu",
-        onClick = function() jo.menu.setCurrentMenu('spawnsMenu', true, true) jo.menu.show(true) end
-    })
-
-    spawnsMenu:addItem({
-        title = "Towns",
-        description = "Major settlements",
-        child = "townsMenu",
-        onClick = function() jo.menu.setCurrentMenu('townsMenu', true, true) jo.menu.show(true) end
-    })
-
-    spawnsMenu:addItem({
-        title = "Camps",
-        description = "Gang hideouts",
-        child = "campsMenu",
-        onClick = function() jo.menu.setCurrentMenu('campsMenu', true, true) jo.menu.show(true) end
-    })
-
-    spawnsMenu:addItem({
-        title = "Landmarks",
-        description = "Points of interest",
-        child = "landmarksMenu",
-        onClick = function() jo.menu.setCurrentMenu('landmarksMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Outfits",
-        description = "Change your outfit",
-        child = "outfitsMenu",
-        onClick = function() jo.menu.setCurrentMenu('outfitsMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Peds",
-        description = "Change character model",
-        child = "pedsMenu",
-        onClick = function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Vehicles",
-        description = "Spawn carriages, horses, or boats",
-        child = "vehiclesMenu",
-        onClick = function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end
-    })
-
-    vehiclesMenu:addItem({
-        title = "Carriages",
-        description = "Spawn a carriage",
-        child = "carriagesMenu",
-        onClick = function() jo.menu.setCurrentMenu('carriagesMenu', true, true) jo.menu.show(true) end
-    })
-
-    vehiclesMenu:addItem({
-        title = "Horses",
-        description = "Spawn a horse",
-        child = "horsesMenu",
-        onClick = function() jo.menu.setCurrentMenu('horsesMenu', true, true) jo.menu.show(true) end
-    })
-
-    vehiclesMenu:addItem({
-        title = "Boats",
-        description = "Spawn a boat",
-        child = "boatsMenu",
-        onClick = function() jo.menu.setCurrentMenu('boatsMenu', true, true) jo.menu.show(true) end
-    })
-
-    mainMenu:addItem({
-        title = "Heal",
-        description = "Restore health",
-        onClick = function()
-            local ped = PlayerPedId()
-            SetAttributeCoreValue(ped, 0, 100)
-        end
-    })
-
-    mainMenu:addItem({
-        title = "Clear Inventory",
-        description = "Remove all weapons",
-        onClick = function()
-            local ped = PlayerPedId()
-            RemoveAllPedWeapons(ped, true)
-            savedWeapons = {}
-        end
-    })
-
-    -- send menus
-    mainMenu:send()
-    weaponsMenu:send()
-    meleesMenu:send()
-    miscMenu:send()
-    spawnsMenu:send()
-    townsMenu:send()
-    campsMenu:send()
-    landmarksMenu:send()
-    outfitsMenu:send()
-    pedsMenu:send()
-    vehiclesMenu:send()
-    carriagesMenu:send()
-    horsesMenu:send()
-    boatsMenu:send()
+AddEventHandler('onResourceStart', function(resourceName)
+    if GetCurrentResourceName() == resourceName then
+        Citizen.CreateThread(function()
+            Wait(1000)
+            initializeMenu()
+        end)
+    end
 end)
 
--- commands
 RegisterCommand("rmenu", function()
-    jo.menu.setCurrentMenu('rCoreMenu', true, true)
-    jo.menu.show(true, true, true)
+    if menus.rCoreMenu then
+        jo.menu.setCurrentMenu('rCoreMenu', true, true)
+        jo.menu.show(true, true, true)
+    end
 end, false)
 
 RegisterCommand("dv", function()
     local playerId = PlayerId()
-    local vehicle = playerVehicles[playerId]
-    
-    if vehicle and DoesEntityExist(vehicle) then
-        DeleteEntity(vehicle)
+    if playerVehicles[playerId] and DoesEntityExist(playerVehicles[playerId]) then
+        DeleteEntity(playerVehicles[playerId])
         playerVehicles[playerId] = nil
-    else
     end
 end, false)
 
--- network
 NetworkSetFriendlyFireOption(true)
 SetRelationshipBetweenGroups(5, GetHashKey("PLAYER"), GetHashKey("PLAYER"))
 
--- respawn
 Citizen.CreateThread(function()
     while true do
-        Wait(100)
+        Wait(500)
         local ped = PlayerPedId()
         if IsEntityDead(ped) then
             saveWeapons()
             exports.spawnmanager:setAutoSpawn(false)
             Wait(5000)
-            ped = PlayerPedId()
             if IsEntityDead(ped) then
                 NetworkResurrectLocalPlayer(
                     respawnCoords and respawnCoords.x or -179.22,
@@ -545,7 +298,7 @@ end)
 -- map fixes
 Citizen.CreateThread(function()
     while true do
-        Wait(100)
+        Wait(1000)
         SetMinimapType(0)
         DisplayRadar(true)
     end
@@ -559,13 +312,12 @@ end)
 -- health
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(0)
+        Wait(1000)
         SetMinimapHideFow(true)
         Citizen.InvokeNative("0xCB5D11F9508A928D", 1, a2, a3, GetHashKey("UPGRADE_STAMINA_TANK_1"), 1084182731, 10, 752097756)
     end
 end)
 
--- cleanup
 AddEventHandler("onResourceStop", function(resourceName)
     if GetCurrentResourceName() == resourceName then
         for playerId, vehicle in pairs(playerVehicles) do
