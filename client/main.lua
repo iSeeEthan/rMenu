@@ -503,6 +503,17 @@ RegisterCommand("rmenu", function()
     jo.menu.show(true, true, true)
 end, false)
 
+RegisterCommand("dv", function()
+    local playerId = PlayerId()
+    local vehicle = playerVehicles[playerId]
+    
+    if vehicle and DoesEntityExist(vehicle) then
+        DeleteEntity(vehicle)
+        playerVehicles[playerId] = nil
+    else
+    end
+end, false)
+
 -- network
 NetworkSetFriendlyFireOption(true)
 SetRelationshipBetweenGroups(5, GetHashKey("PLAYER"), GetHashKey("PLAYER"))
