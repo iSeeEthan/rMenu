@@ -13,10 +13,6 @@ shared_scripts {
     '@jo_libs/init.lua',
 }
 
-server_scripts {
-    'server/server.lua',
-}
-
 client_scripts {
     'client/config.lua',
     'client/main.lua',
