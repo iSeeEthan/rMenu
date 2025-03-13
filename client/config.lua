@@ -186,7 +186,7 @@ Config.GangMembers = {
     {title = "Braithwaite Gang 2", hash = "G_M_M_UniBraithwaites_02"}
 }
 
-Config.Lawmen = {a
+Config.Lawmen = {
     {title = "Sheriff Freeman", hash = "CS_SheriffFreeman"},
     {title = "Sheriff Owens", hash = "CS_SheriffOwens"},
     {title = "Deputy 1", hash = "U_M_M_Deputy_01"},
