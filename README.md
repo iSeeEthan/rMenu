@@ -29,7 +29,7 @@ rMenu is a versatile and user-friendly menu designed for RedM, offering players 
 - Select items to equip weapons, spawn vehicles, teleport, or modify your character.  
 
 ### Commands
-- `/rmenu` - Opens the main menu.  
+- `/rmenu` or `/F6`- Opens the main menu.  
 - `/dv` - Deletes your current horse, carriage or boat.   `v1.0.5`
 ---
 
