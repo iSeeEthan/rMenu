@@ -334,6 +334,30 @@ Citizen.CreateThread(function()
     end
 end)
 
+--open menu
+local isMenuOpen = false
+
+Citizen.CreateThread(function()
+    while true do
+        Wait(0)
+        if IsControlPressed(0, 0x35957F6C) then
+            if menus.rCoreMenu then 
+                if isMenuOpen then
+                    jo.menu.show(false)
+                    isMenuOpen = false
+                else
+                    jo.menu.setCurrentMenu('rCoreMenu', true, true)
+                    jo.menu.show(true, true, true)
+                    isMenuOpen = true
+                end
+            end
+            -- debounce
+            Wait(250)
+        end
+    end
+end)
+
+
 AddEventHandler("onResourceStop", function(resourceName)
     if GetCurrentResourceName() == resourceName then
         for playerId, vehicle in pairs(playerVehicles) do
