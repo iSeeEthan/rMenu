@@ -132,6 +132,11 @@ local function initializeMenu()
     createMenu('carriagesMenu', "rMenu", "Carriages", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
     createMenu('horsesMenu', "rMenu", "Horses", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
     createMenu('boatsMenu', "rMenu", "Boats", 8, function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
+    createMenu('storyPedsMenu', "rMenu", "Story Characters", 8, function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    createMenu('animalsMenu', "rMenu", "Animals", 8, function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    createMenu('civiliansMenu', "rMenu", "Civilians", 8, function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    createMenu('gangMembersMenu', "rMenu", "Gang Members", 8, function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    createMenu('lawmenMenu', "rMenu", "Lawmen", 8, function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
 
     for _, weapon in ipairs(Config.Firearms) do
         addMenuItem('weaponsMenu', weapon.title, "Equip this firearm", {money = 10.0}, nil, function()
@@ -191,8 +196,8 @@ local function initializeMenu()
         end)
     end
 
-    for _, pedData in ipairs(Config.StoryPeds) do
-        addMenuItem('pedsMenu', pedData.title, "Change to " .. pedData.title, nil, nil, function()
+    local function addPedChange(menuId, pedData)
+        addMenuItem(menuId, pedData.title, "Change to " .. pedData.title, nil, nil, function()
             local playerId = PlayerId()
             local modelHash = GetHashKey(pedData.hash)
             RequestModel(modelHash)
@@ -204,6 +209,12 @@ local function initializeMenu()
             currentPedModel = pedData.hash
         end)
     end
+
+    for _, pedData in ipairs(Config.StoryPeds) do addPedChange('storyPedsMenu', pedData) end
+    for _, pedData in ipairs(Config.Animals) do addPedChange('animalsMenu', pedData) end
+    for _, pedData in ipairs(Config.Civilians) do addPedChange('civiliansMenu', pedData) end
+    for _, pedData in ipairs(Config.GangMembers) do addPedChange('gangMembersMenu', pedData) end
+    for _, pedData in ipairs(Config.Lawmen) do addPedChange('lawmenMenu', pedData) end
 
     for _, horse in ipairs(Config.Horses) do
         addMenuItem('horsesMenu', horse.title, "Spawn a " .. horse.title, nil, nil, function()
@@ -232,6 +243,11 @@ local function initializeMenu()
     addMenuItem('spawnsMenu', "Landmarks", "Points of interest", nil, "landmarksMenu", function() jo.menu.setCurrentMenu('landmarksMenu', true, true) jo.menu.show(true) end)
     addMenuItem('rCoreMenu', "Outfits", "Change your outfit", nil, "outfitsMenu", function() jo.menu.setCurrentMenu('outfitsMenu', true, true) jo.menu.show(true) end)
     addMenuItem('rCoreMenu', "Peds", "Change character model", nil, "pedsMenu", function() jo.menu.setCurrentMenu('pedsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('pedsMenu', "Story Characters", "Main story peds", nil, "storyPedsMenu", function() jo.menu.setCurrentMenu('storyPedsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('pedsMenu', "Animals", "Wildlife peds", nil, "animalsMenu", function() jo.menu.setCurrentMenu('animalsMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('pedsMenu', "Civilians", "Townsfolk peds", nil, "civiliansMenu", function() jo.menu.setCurrentMenu('civiliansMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('pedsMenu', "Gang Members", "Outlaw peds", nil, "gangMembersMenu", function() jo.menu.setCurrentMenu('gangMembersMenu', true, true) jo.menu.show(true) end)
+    addMenuItem('pedsMenu', "Lawmen", "Sheriff and deputy peds", nil, "lawmenMenu", function() jo.menu.setCurrentMenu('lawmenMenu', true, true) jo.menu.show(true) end)
     addMenuItem('rCoreMenu', "Vehicles", "Spawn carriages, horses, or boats", nil, "vehiclesMenu", function() jo.menu.setCurrentMenu('vehiclesMenu', true, true) jo.menu.show(true) end)
     addMenuItem('vehiclesMenu', "Carriages", "Spawn a carriage", nil, "carriagesMenu", function() jo.menu.setCurrentMenu('carriagesMenu', true, true) jo.menu.show(true) end)
     addMenuItem('vehiclesMenu', "Horses", "Spawn a horse", nil, "horsesMenu", function() jo.menu.setCurrentMenu('horsesMenu', true, true) jo.menu.show(true) end)
