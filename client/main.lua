@@ -59,7 +59,7 @@ local function restorePedAndOutfit()
     end
 end
 
-local function spawnVehicle(modelHash, applyRandomVariation)
+local function spawnVehicle(modelHash, entityType, applyRandomVariation)
     local ped = PlayerPedId()
     local playerId = PlayerId()
     local x, y, z = table.unpack(GetEntityCoords(ped))
@@ -90,22 +90,34 @@ local function spawnVehicle(modelHash, applyRandomVariation)
         playerVehicles[playerId] = nil
     end
     
-    local vehicle = CreatePed(hash, spawnX, spawnY, spawnZ, heading, true, false, false)
-    if not DoesEntityExist(vehicle) then
+    local entity
+    if entityType == "ped" then
+        entity = CreatePed(hash, spawnX, spawnY, spawnZ, heading, true, false, false)
+    else
+        entity = CreateVehicle(hash, spawnX, spawnY, spawnZ, heading, true, false)
+    end
+    
+    if not DoesEntityExist(entity) then
         SetModelAsNoLongerNeeded(hash)
         return nil
     end
     
-    SetEntityAsMissionEntity(vehicle, true, true)
+    SetEntityAsMissionEntity(entity, true, true)
     if applyRandomVariation then
-        Citizen.InvokeNative(0x283978A15512B2FE, vehicle, true)
+        Citizen.InvokeNative(0x283978A15512B2FE, entity, true)
     end
-    SetEntityCollision(vehicle, true, true)
-    TaskWarpPedIntoVehicle(ped, vehicle, -1)
-    SetModelAsNoLongerNeeded(hash)
-    playerVehicles[playerId] = vehicle
+    SetEntityCollision(entity, true, true)
     
-    return vehicle
+    if entityType == "ped" then
+        TaskWarpPedIntoVehicle(ped, entity, -1) -- Mount horse
+    else
+        SetPedIntoVehicle(ped, entity, -1) -- Enter vehicle (driver seat)
+    end
+    
+    SetModelAsNoLongerNeeded(hash)
+    playerVehicles[playerId] = entity
+    
+    return entity
 end
 
 -- menu creation after player spawn
@@ -328,36 +340,35 @@ AddEventHandler('playerSpawned', function()
             end
         })
     end
-
-    for _, carriage in ipairs(Config.Carriages) do
-        carriagesMenu:addItem({
-            title = carriage.title,
-            description = "Spawn a " .. carriage.title,
-            onClick = function()
-                spawnVehicle(carriage.hash, true)
-            end
-        })
-    end
-
-    for _, horse in ipairs(Config.Horses) do
-        horsesMenu:addItem({
-            title = horse.title,
-            description = "Spawn a " .. horse.title,
-            onClick = function()
-                spawnVehicle(horse.hash, true)
-            end
-        })
-    end
-
-    for _, boat in ipairs(Config.Boats) do
-        boatsMenu:addItem({
-            title = boat.title,
-            description = "Spawn a " .. boat.title,
-            onClick = function()
-                spawnVehicle(boat.hash, false)
-            end
-        })
-    end
+        
+for _, horse in ipairs(Config.Horses) do
+    horsesMenu:addItem({
+        title = horse.title,
+        description = "Spawn a " .. horse.title,
+        onClick = function()
+            spawnVehicle(horse.hash, "ped", true)
+        end
+    })
+end
+        
+for _, carriage in ipairs(Config.Carriages) do
+    carriagesMenu:addItem({
+        title = carriage.title,
+        description = "Spawn a " .. carriage.title,
+        onClick = function()
+            spawnVehicle(carriage.hash, "vehicle", true)
+        end
+    })
+end
+for _, boat in ipairs(Config.Boats) do
+    boatsMenu:addItem({
+        title = boat.title,
+        description = "Spawn a " .. boat.title,
+        onClick = function()
+            spawnVehicle(boat.hash, "vehicle", false)
+        end
+    })
+end
 
     mainMenu:addItem({
         title = "Weapons",
