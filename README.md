@@ -39,7 +39,7 @@ rMenu is a versatile and user-friendly menu designed for RedM, offering players 
 
 ## Configuration
 
-The menu is driven by configuration tables (assumed to be in a separate `Config.lua`). Modify these to add or remove options:
+The menu is driven by configuration tables ( in a  `config.lua`).
 
 - `Config.Firearms`: List of firearms with hashes, ammo, and titles.  
 - `Config.Towns`: Teleport coordinates for towns.  
